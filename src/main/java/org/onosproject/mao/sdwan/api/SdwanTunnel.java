@@ -1,8 +1,9 @@
 package org.onosproject.mao.sdwan.api;
 
 import org.onosproject.net.ConnectPoint;
+import org.onosproject.net.DefaultPath;
 import org.onosproject.net.DeviceId;
-import org.onosproject.net.PortNumber;
+import org.onosproject.net.Path;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +21,21 @@ public class SdwanTunnel {
     public static final int MAX_LABEL = 1048575;
 
 
-
     private String tenantName;
     private ConnectPoint srcSite;
     private ConnectPoint dstSite;
-    private List<DeviceId> forwardPath;
-    private List<DeviceId> backwardPath;
+    private List<DeviceId> forwardDevices;
+    private List<DeviceId> backwardDevices;
+    private Path forwardPath;
+    private Path backwardPath;
     private int forwardLabel; // MPLS now
     private int backwardLabel; // MPLS now
 
+
+
     SdwanTunnel(String tenantName, ConnectPoint srcSite, ConnectPoint dstSite,
-                List<DeviceId> forwardPath, List<DeviceId> backwardPath,
+                List<DeviceId> forwardDevices, List<DeviceId> backwardDevices,
+                Path forwardPath, Path backwardPath,
                 int forwardLabel, int backwardLabel){
 
         checkNotNull(tenantName, "Tenant name must be set");
@@ -48,11 +53,15 @@ public class SdwanTunnel {
         this.tenantName = tenantName;
         this.srcSite = srcSite;
         this.dstSite = dstSite;
-        this.forwardPath = forwardPath == null ? new ArrayList<>() : forwardPath;
-        this.backwardPath = backwardPath == null ? new ArrayList<>() : backwardPath;
+        this.forwardDevices = forwardDevices == null ? new ArrayList<>() : forwardDevices;
+        this.backwardDevices = backwardDevices == null ? new ArrayList<>() : backwardDevices;
+        this.forwardPath = forwardPath;
+        this.backwardPath = backwardPath;
         this.forwardLabel = forwardLabel;
         this.backwardLabel = backwardLabel;
     }
+
+    
 
     public String getTenantName() {
         return tenantName;
@@ -66,11 +75,19 @@ public class SdwanTunnel {
         return dstSite;
     }
 
-    public List<DeviceId> getForwardPath() {
+    public List<DeviceId> getForwardDevices() {
+        return forwardDevices;
+    }
+
+    public List<DeviceId> getBackwardDevices() {
+        return backwardDevices;
+    }
+
+    public Path getForwardPath() {
         return forwardPath;
     }
 
-    public List<DeviceId> getBackwardPath() {
+    public Path getBackwardPath() {
         return backwardPath;
     }
 
@@ -83,12 +100,23 @@ public class SdwanTunnel {
     }
 
 
-    public void updateForwardPath(List<DeviceId> path) {
+
+    public void updateForwardDevices(List<DeviceId> devices) {
+        checkNotNull(devices, "devices cannot be null");
+        this.forwardDevices = devices;
+    }
+
+    public void updateBackwardDevices(List<DeviceId> devices) {
+        checkNotNull(devices, "devices cannot be null");
+        this.backwardDevices = devices;
+    }
+
+    public void updateForwardPath(Path path) {
         checkNotNull(path, "path cannot be null");
         this.forwardPath = path;
     }
 
-    public void updateBackwardPath(List<DeviceId> path) {
+    public void updateBackwardPath(Path path) {
         checkNotNull(path, "path cannot be null");
         this.backwardPath = path;
     }
@@ -99,6 +127,14 @@ public class SdwanTunnel {
         this.forwardLabel = label;
     }
 
+    public void updateBackwardLabel(int label) {
+        checkArgument(label >= MIN_LABEL && label <= MAX_LABEL,
+                "label is out of scope %s ~ %s", MIN_LABEL, MAX_LABEL);
+        this.backwardLabel = label;
+    }
+
+
+
     public static Builder builder() { return new Builder(); }
 
     public static final class Builder {
@@ -106,8 +142,10 @@ public class SdwanTunnel {
         private String tenantName;
         private ConnectPoint srcSite;
         private ConnectPoint dstSite;
-        private List<DeviceId> forwardPath;
-        private List<DeviceId> backwardPath;
+        private List<DeviceId> forwardDevices;
+        private List<DeviceId> backwardDevices;
+        private Path forwardPath;
+        private Path backwardPath;
         private int forwardLabel; // MPLS now
         private int backwardLabel; // MPLS now
 
@@ -144,20 +182,33 @@ public class SdwanTunnel {
         }
 
         //optional
-        public Builder forwardPath(List<DeviceId> path) {
+        public Builder forwardDevices(List<DeviceId> devices) {
+            this.forwardDevices = devices;
+            return this;
+        }
+
+        //optional
+        public Builder backwardDevices(List<DeviceId> devices) {
+            this.backwardDevices = devices;
+            return this;
+        }
+
+        //optional
+        public Builder forwardPath(Path path) {
             this.forwardPath = path;
             return this;
         }
 
         //optional
-        public Builder backwardPath(List<DeviceId> path) {
+        public Builder backwardPath(Path path) {
             this.backwardPath = path;
             return this;
         }
 
         public SdwanTunnel build() {
             return new SdwanTunnel(tenantName, srcSite, dstSite,
-                    forwardPath, backwardPath, forwardLabel, backwardLabel);
+                    forwardDevices, backwardDevices, forwardPath, backwardPath,
+                    forwardLabel, backwardLabel);
         }
     }
 }
