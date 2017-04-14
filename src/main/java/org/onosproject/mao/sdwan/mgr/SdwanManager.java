@@ -13,31 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mao;
+package org.onosproject.mao.sdwan.mgr;
 
+import org.apache.commons.collections.map.MultiValueMap;
 import org.apache.felix.scr.annotations.Activate;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Deactivate;
 import org.apache.felix.scr.annotations.Service;
+import org.onosproject.mao.sdwan.api.SdwanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Skeletal ONOS application component.
  */
 @Component(immediate = true)
-public class AppComponent {
+public class SdwanManager implements SdwanService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+    private Map vpnDB = new MultiValueMap();
 
     @Activate
     protected void activate() {
+
+
         log.info("Started");
     }
 
     @Deactivate
     protected void deactivate() {
+        vpnDB.clear();
+
         log.info("Stopped");
     }
 
+
+    @Override
+    public boolean createVPN(String tenantName, String srcSite, String dstSite) {
+
+
+
+        return false;
+    }
 }

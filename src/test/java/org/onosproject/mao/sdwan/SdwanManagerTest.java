@@ -13,22 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.mao;
+package org.onosproject.mao.sdwan;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.onosproject.mao.sdwan.mgr.SdwanManager;
 
 /**
  * Set of tests of the ONOS application component.
  */
-public class AppComponentTest {
+public class SdwanManagerTest {
 
-    private AppComponent component;
+    private SdwanManager component;
 
     @Before
     public void setUp() {
-        component = new AppComponent();
+        component = new SdwanManager();
         component.activate();
     }
 
