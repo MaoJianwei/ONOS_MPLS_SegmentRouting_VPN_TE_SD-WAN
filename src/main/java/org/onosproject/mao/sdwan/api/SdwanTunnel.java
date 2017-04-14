@@ -15,9 +15,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class SdwanTunnel {
 
-    private static final int INVALID_LABEL = -1;
-    private static final int MIN_LABEL = 0;
-    private static final int MAX_LABEL = 1048575;
+    public static final int INVALID_LABEL = -1;
+    public static final int MIN_LABEL = 0;
+    public static final int MAX_LABEL = 1048575;
 
 
 
@@ -121,13 +121,13 @@ public class SdwanTunnel {
             return this;
         }
 
-        public Builder src(DeviceId dpid, PortNumber port) {
-            this.srcSite = new ConnectPoint(dpid, port);
+        public Builder src(ConnectPoint srcSite) {
+            this.srcSite = srcSite;
             return this;
         }
 
-        public Builder dst(DeviceId dpid, PortNumber port) {
-            this.dstSite = new ConnectPoint(dpid, port);
+        public Builder dst(ConnectPoint dstSite) {
+            this.dstSite = dstSite;
             return this;
         }
 
