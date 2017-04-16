@@ -6,7 +6,9 @@ import org.onosproject.net.DeviceId;
 import org.onosproject.net.Path;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -17,6 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class SdwanTunnel {
 
     public static final int INVALID_LABEL = -1;
+    public static final int INVALID_NETWORK_PROTOCOL = -1;
     public static final int MIN_LABEL = 0;
     public static final int MAX_LABEL = 1048575;
 
@@ -24,6 +27,7 @@ public class SdwanTunnel {
     private String tenantName;
     private ConnectPoint srcSite;
     private ConnectPoint dstSite;
+    private int networkProtocol;
     private List<DeviceId> forwardDevices;
     private List<DeviceId> backwardDevices;
     private Path forwardPath;
@@ -36,7 +40,7 @@ public class SdwanTunnel {
     SdwanTunnel(String tenantName, ConnectPoint srcSite, ConnectPoint dstSite,
                 List<DeviceId> forwardDevices, List<DeviceId> backwardDevices,
                 Path forwardPath, Path backwardPath,
-                int forwardLabel, int backwardLabel){
+                int forwardLabel, int backwardLabel, int networkProtocol){
 
         checkNotNull(tenantName, "Tenant name must be set");
         checkNotNull(srcSite, "Src site must be set");
@@ -49,6 +53,8 @@ public class SdwanTunnel {
                 "Backward label must be set");
         checkArgument(backwardLabel >= MIN_LABEL && backwardLabel <= MAX_LABEL,
                 "Backward label is out of scope %s ~ %s", MIN_LABEL, MAX_LABEL);
+        checkArgument(networkProtocol != INVALID_NETWORK_PROTOCOL,
+                "Network Protocol must be set. e.g. IPv4:0x0800, ARP:0x0806");
 
         this.tenantName = tenantName;
         this.srcSite = srcSite;
@@ -59,9 +65,10 @@ public class SdwanTunnel {
         this.backwardPath = backwardPath;
         this.forwardLabel = forwardLabel;
         this.backwardLabel = backwardLabel;
+        this.networkProtocol = networkProtocol;
     }
 
-    
+
 
     public String getTenantName() {
         return tenantName;
@@ -99,7 +106,15 @@ public class SdwanTunnel {
         return backwardLabel;
     }
 
+    public int getNetworkProtocol() {
+        return networkProtocol;
+    }
 
+
+
+    public void updateNetworkProtocol(int ethertypeCode) {
+        this.networkProtocol = ethertypeCode;
+    }
 
     public void updateForwardDevices(List<DeviceId> devices) {
         checkNotNull(devices, "devices cannot be null");
@@ -142,6 +157,7 @@ public class SdwanTunnel {
         private String tenantName;
         private ConnectPoint srcSite;
         private ConnectPoint dstSite;
+        private int networkProtocols;
         private List<DeviceId> forwardDevices;
         private List<DeviceId> backwardDevices;
         private Path forwardPath;
@@ -149,9 +165,11 @@ public class SdwanTunnel {
         private int forwardLabel; // MPLS now
         private int backwardLabel; // MPLS now
 
+
         Builder(){
             forwardLabel = INVALID_LABEL;
             backwardLabel = INVALID_LABEL;
+            networkProtocols = INVALID_NETWORK_PROTOCOL;
         }
 
         public Builder tenant(String name) {
@@ -166,6 +184,11 @@ public class SdwanTunnel {
 
         public Builder dst(ConnectPoint dstSite) {
             this.dstSite = dstSite;
+            return this;
+        }
+
+        public Builder networkProtocol(int ethertypeCode) {
+            networkProtocols = ethertypeCode;
             return this;
         }
 
@@ -208,7 +231,7 @@ public class SdwanTunnel {
         public SdwanTunnel build() {
             return new SdwanTunnel(tenantName, srcSite, dstSite,
                     forwardDevices, backwardDevices, forwardPath, backwardPath,
-                    forwardLabel, backwardLabel);
+                    forwardLabel, backwardLabel, networkProtocols);
         }
     }
 }

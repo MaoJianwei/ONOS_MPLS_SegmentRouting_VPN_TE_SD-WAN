@@ -13,5 +13,5 @@ public interface SdwanService {
      * @param dstSite dpid and port no. of destination device, e.g. of:0000000000000001/1
      * @return
      */
-    boolean createVPN(String tenantName, String srcSite, String dstSite);
+    boolean createVPN(String tenantName, String srcSite, String dstSite, int ethertypeCode);
 }
