@@ -30,12 +30,12 @@ public class SdwanManagerTest {
     @Before
     public void setUp() {
         component = new SdwanManager();
-        component.activate();
+        //component.activate();
     }
 
     @After
     public void tearDown() {
-        component.deactivate();
+        //component.deactivate();
     }
 
     @Test
