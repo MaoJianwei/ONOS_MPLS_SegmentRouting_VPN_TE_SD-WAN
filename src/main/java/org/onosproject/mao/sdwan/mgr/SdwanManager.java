@@ -42,11 +42,12 @@ import static org.onosproject.net.PortNumber.portNumber;
 /**
  * Skeletal ONOS application component.
  */
+@Service
 @Component(immediate = true)
 public class SdwanManager implements SdwanService {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
-    private final int FLOWRULE_PRIORITY = 33333;
+    private final int FLOWRULE_PRIORITY = 55555;
 
 
     @Reference(cardinality = ReferenceCardinality.MANDATORY_UNARY)
@@ -69,7 +70,7 @@ public class SdwanManager implements SdwanService {
 
 
     @Activate
-    protected void activate() {
+    public void activate() {
 
         appId = coreService.registerApplication("Mao.SDWAN");
 
@@ -77,7 +78,7 @@ public class SdwanManager implements SdwanService {
     }
 
     @Deactivate
-    protected void deactivate() {
+    public void deactivate() {
 
         flowRuleService.removeFlowRulesById(appId);
 
@@ -211,7 +212,7 @@ public class SdwanManager implements SdwanService {
                     .forTable(0)
                     .fromApp(appId)
                     .makePermanent()
-                    .withCookie(tunnel.getForwardLabel())
+                    // .withCookie(tunnel.getForwardLabel())
                     .withPriority(FLOWRULE_PRIORITY)
                     .withSelector(selector)
                     .withTreatment(treatment)
@@ -232,6 +233,7 @@ public class SdwanManager implements SdwanService {
 
         TrafficSelector selector = DefaultTrafficSelector.builder()
                 .matchInPort(entryFirstHop.port())
+                .matchEthType((short)(tunnel.getNetworkProtocol() & 0xFFFF))
                 .build();
 
         TrafficTreatment treatment = DefaultTrafficTreatment.builder()
@@ -245,7 +247,7 @@ public class SdwanManager implements SdwanService {
                 .forTable(0)
                 .fromApp(appId)
                 .makePermanent()
-                .withCookie(tunnel.getForwardLabel())
+                // .withCookie(tunnel.getForwardLabel())
                 .withPriority(FLOWRULE_PRIORITY)
                 .withSelector(selector)
                 .withTreatment(treatment)
@@ -277,7 +279,7 @@ public class SdwanManager implements SdwanService {
                         .forTable(0)
                         .fromApp(appId)
                         .makePermanent()
-                        .withCookie(tunnel.getForwardLabel())
+                        // .withCookie(tunnel.getForwardLabel())
                         .withPriority(FLOWRULE_PRIORITY)
                         .withSelector(selector)
                         .withTreatment(treatment)
@@ -309,7 +311,7 @@ public class SdwanManager implements SdwanService {
                 .forTable(0)
                 .fromApp(appId)
                 .makePermanent()
-                .withCookie(tunnel.getForwardLabel())
+                // .withCookie(tunnel.getForwardLabel())
                 .withPriority(FLOWRULE_PRIORITY)
                 .withSelector(selector)
                 .withTreatment(treatment)
@@ -321,7 +323,8 @@ public class SdwanManager implements SdwanService {
 
         // ------------
 
-        FlowRule [] flows = (FlowRule []) tunnelFlows.toArray();
+        FlowRule [] flows = new FlowRule[tunnelFlows.size()];
+        tunnelFlows.toArray(flows);
 
         flowRuleService.applyFlowRules(flows);
 
@@ -345,7 +348,6 @@ public class SdwanManager implements SdwanService {
 
             TrafficSelector selector = DefaultTrafficSelector.builder()
                     .matchInPort(tunnel.getDstSite().port())
-                    .matchEthType((short)(tunnel.getNetworkProtocol() & 0xFFFF))
                     .build();
 
             TrafficTreatment treatment = DefaultTrafficTreatment.builder()
@@ -358,7 +360,7 @@ public class SdwanManager implements SdwanService {
                     .forTable(0)
                     .fromApp(appId)
                     .makePermanent()
-                    .withCookie(tunnel.getBackwardLabel())
+                    // .withCookie(tunnel.getBackwardLabel())
                     .withPriority(FLOWRULE_PRIORITY)
                     .withSelector(selector)
                     .withTreatment(treatment)
@@ -381,6 +383,7 @@ public class SdwanManager implements SdwanService {
 
         TrafficSelector selector = DefaultTrafficSelector.builder()
                 .matchInPort(entryFirstHop.port())
+                .matchEthType((short)(tunnel.getNetworkProtocol() & 0xFFFF))
                 .build();
 
         TrafficTreatment treatment = DefaultTrafficTreatment.builder()
@@ -394,7 +397,7 @@ public class SdwanManager implements SdwanService {
                 .forTable(0)
                 .fromApp(appId)
                 .makePermanent()
-                .withCookie(tunnel.getBackwardLabel())
+                // .withCookie(tunnel.getBackwardLabel())
                 .withPriority(FLOWRULE_PRIORITY)
                 .withSelector(selector)
                 .withTreatment(treatment)
@@ -427,7 +430,7 @@ public class SdwanManager implements SdwanService {
                         .forTable(0)
                         .fromApp(appId)
                         .makePermanent()
-                        .withCookie(tunnel.getBackwardLabel())
+                        // .withCookie(tunnel.getBackwardLabel())
                         .withPriority(FLOWRULE_PRIORITY)
                         .withSelector(selector)
                         .withTreatment(treatment)
@@ -459,7 +462,7 @@ public class SdwanManager implements SdwanService {
                 .forTable(0)
                 .fromApp(appId)
                 .makePermanent()
-                .withCookie(tunnel.getBackwardLabel())
+                // .withCookie(tunnel.getBackwardLabel())
                 .withPriority(FLOWRULE_PRIORITY)
                 .withSelector(selector)
                 .withTreatment(treatment)
@@ -471,7 +474,8 @@ public class SdwanManager implements SdwanService {
 
         // ------------
 
-        FlowRule [] flows = (FlowRule []) tunnelFlows.toArray();
+        FlowRule [] flows = new FlowRule[tunnelFlows.size()];
+        tunnelFlows.toArray(flows);
 
         flowRuleService.applyFlowRules(flows);
 
