@@ -12,7 +12,7 @@ import static org.onosproject.mao.sdwan.api.SdwanTunnel.INVALID_NETWORK_PROTOCOL
  * Created by mao on 17-4-17.
  */
 @Command(scope = "onos",
-        name = "sdwan-create-cpn",
+        name = "sdwan-create-vpn",
         description = "Create MPLS/SR VPN tunnel",
         detailedDescription = "Create MPLS/SR VPN tunnel")
 public class SdwanCreateVPN extends AbstractShellCommand {
