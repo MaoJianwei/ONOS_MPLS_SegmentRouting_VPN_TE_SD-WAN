@@ -37,6 +37,7 @@ import static org.onlab.packet.MplsLabel.mplsLabel;
 import static org.onosproject.mao.sdwan.api.SdwanTunnel.INVALID_LABEL;
 import static org.onosproject.mao.sdwan.api.SdwanTunnel.MAX_LABEL;
 import static org.onosproject.net.DeviceId.deviceId;
+import static org.onosproject.net.PortNumber.CONTROLLER;
 import static org.onosproject.net.PortNumber.portNumber;
 
 /**
@@ -202,10 +203,15 @@ public class SdwanManager implements SdwanService {
                     .matchEthType((short)(tunnel.getNetworkProtocol() & 0xFFFF))
                     .build();
 
-            TrafficTreatment treatment = DefaultTrafficTreatment.builder()
+            TrafficTreatment.Builder treatmentB = DefaultTrafficTreatment.builder()
                     .immediate()
-                    .setOutput(tunnel.getDstSite().port())
-                    .build();
+                    .setOutput(tunnel.getDstSite().port());
+
+            if(tunnel.getNetworkProtocol() == EthType.EtherType.ARP.ethType().toShort()){
+                treatmentB.setOutput(PortNumber.CONTROLLER);
+            }
+
+            TrafficTreatment treatment = treatmentB.build();
 
             FlowRule oneHopFlow = DefaultFlowRule.builder()
                     .forDevice(tunnel.getSrcSite().deviceId())
@@ -236,8 +242,14 @@ public class SdwanManager implements SdwanService {
                 .matchEthType((short)(tunnel.getNetworkProtocol() & 0xFFFF))
                 .build();
 
-        TrafficTreatment treatment = DefaultTrafficTreatment.builder()
-                .immediate()
+
+        TrafficTreatment.Builder treatmentB = DefaultTrafficTreatment.builder().immediate();
+
+        if(tunnel.getNetworkProtocol() == EthType.EtherType.ARP.ethType().toShort()){
+            treatmentB.setOutput(PortNumber.CONTROLLER);
+        }
+
+        TrafficTreatment treatment = treatmentB
                 .pushMpls().setMpls(mplsLabel(tunnel.getForwardLabel()))
                 .setOutput(leaveFirstHop.port())
                 .build();
@@ -350,10 +362,15 @@ public class SdwanManager implements SdwanService {
                     .matchInPort(tunnel.getDstSite().port())
                     .build();
 
-            TrafficTreatment treatment = DefaultTrafficTreatment.builder()
+            TrafficTreatment.Builder treatmentB = DefaultTrafficTreatment.builder()
                     .immediate()
-                    .setOutput(tunnel.getSrcSite().port())
-                    .build();
+                    .setOutput(tunnel.getSrcSite().port());
+
+            if(tunnel.getNetworkProtocol() == EthType.EtherType.ARP.ethType().toShort()) {
+                treatmentB.setOutput(CONTROLLER);
+            }
+
+            TrafficTreatment treatment = treatmentB.build();
 
             FlowRule oneHopFlow = DefaultFlowRule.builder()
                     .forDevice(tunnel.getDstSite().deviceId())
@@ -386,8 +403,13 @@ public class SdwanManager implements SdwanService {
                 .matchEthType((short)(tunnel.getNetworkProtocol() & 0xFFFF))
                 .build();
 
-        TrafficTreatment treatment = DefaultTrafficTreatment.builder()
-                .immediate()
+        TrafficTreatment.Builder treatmentB = DefaultTrafficTreatment.builder().immediate();
+
+        if(tunnel.getNetworkProtocol() == EthType.EtherType.ARP.ethType().toShort()) {
+            treatmentB.setOutput(CONTROLLER);
+        }
+        
+        TrafficTreatment treatment = treatmentB
                 .pushMpls().setMpls(mplsLabel(tunnel.getBackwardLabel()))
                 .setOutput(leaveFirstHop.port())
                 .build();
